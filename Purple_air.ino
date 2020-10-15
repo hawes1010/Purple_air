@@ -41,13 +41,9 @@ const int chipSelect = 4;
 
 void setup()
 {
-  //UNCOMMENT THESE TWO LINES FOR TEENSY AUDIO BOARD:
-  //SPI.setMOSI(7);  // Audio shield has MOSI on pin 7
-  //SPI.setSCK(14);  // Audio shield has SCK on pin 14
-  
  // Open serial communications and wait for port to open:
   Serial.begin(9600);
-  Serial1.begin(9600);
+  Serial1.begin(4800);
    while (!Serial) {
     ; // wait for serial port to connect.
   }
@@ -55,36 +51,33 @@ while (!Serial1) {
     ; // wait for serial port to connect.
   }
 
-  Serial.print("Initializing SD card...");
-  
-  // see if the card is present and can be initialized:
-  if (!SD.begin(chipSelect)) {
-    Serial.println("Card failed, or not present");
-    // don't do anything more:
-    return;
-  }
-  Serial.println("card initialized.");
+  Serial.println("Starting...");
 }
 
 void loop()
 {
   // make a string for assembling the data to log:
-  String dataString = "";  // datastring that will hold values from 
-
-  // open the file.
-  File dataFile = SD.open("datalog.txt", FILE_WRITE);
-
-  // if the file is available, write to it:
-  if (dataFile) {
-    dataFile.println(dataString);
-    dataFile.close();
-    // print to the serial port too:
-    Serial.println(dataString);
-  }  
-  // if the file isn't open, pop up an error:
-  else {
-    Serial.println("error opening datalog.txt");
-  } 
+  char* dataString;  // datastring that will hold values from 
+  char Purple_char;
+  int index = 0;
+  bool data = false;
+  while (Serial1.available()>0){
+    Purple_char = Serial1.read();
+    dataString[index] = Purple_char;
+    Serial.print("char is: ");
+  Serial.println(Purple_char);
+  data = true;
+  index++;
+  if (index>100)
+  break;
+  }
+  if (data){
+  Serial.print("Data is: ");
+  Serial.println(dataString);
+  data = false;
+  }
+  delay(1000);
+  Serial.println("delay");
 }
 
 String parseString(String s){
