@@ -43,7 +43,7 @@ void setup()
 {
  // Open serial communications and wait for port to open:
   Serial.begin(9600);
-  Serial1.begin(4800);
+  Serial1.begin(9600);
    while (!Serial) {
     ; // wait for serial port to connect.
   }
@@ -80,6 +80,26 @@ void loop()
   Serial.println("delay");
 }
 
+String msg[10];
+
 String parseString(String s){
+  int len= s.length();
+  int i = 0;
+  int prev_comma = 0;
+  int msg_num = 0;
+  bool first = true;
+  for (i = 0; i<len;i++){
+    //find commas and export data values
+    if(s.charAt(i)== ',' and first){
+      msg[msg_num] = s.substring(0,i);
+      prev_comma = i;
+      first = false;
+    }
+    else if (s.charAt(i)== ','){
+      msg[msg_num] = s.substring(prev_comma+1,i);
+      prev_comma = i;
+    }
+    msg_num++;
+  }
   
 }
