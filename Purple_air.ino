@@ -20,7 +20,7 @@
  	 
  */
 
-#include <SD.h>
+//#include <SD.h>
 #include <SPI.h>
 
 // On the Ethernet Shield, CS is pin 4. Note that even if it's not
@@ -37,13 +37,12 @@
 // Wiz820+SD board: pin 4
 // Teensy 2.0: pin 0
 // Teensy++ 2.0: pin 20
-const int chipSelect = 4;
-
+int data_counter = 0;
 void setup()
 {
  // Open serial communications and wait for port to open:
   Serial.begin(9600);
-  Serial1.begin(9600);
+  Serial1.begin(115200);
    while (!Serial) {
     ; // wait for serial port to connect.
   }
@@ -53,31 +52,53 @@ while (!Serial1) {
 
   Serial.println("Starting...");
 }
-
+String all_data;
+bool data_counter1;
+bool data_counter2;
+String values;
 void loop()
 {
+
+  if (data_counter1){
+  data_counter2 = true;
+  data_counter1 = false;
+  }
+  String data_all;
   // make a string for assembling the data to log:
-  char* dataString;  // datastring that will hold values from 
-  char Purple_char;
-  int index = 0;
-  bool data = false;
-  while (Serial1.available()>0){
-    Purple_char = Serial1.read();
-    dataString[index] = Purple_char;
-    Serial.print("char is: ");
-  Serial.println(Purple_char);
-  data = true;
-  index++;
-  if (index>100)
-  break;
+  String dataString1;  // datastring that will hold values from 
+  String dataString2;  // datastring that will hold values from 
+  String dataString3;
+
+  bool ready = false;
+  if (Serial1.available()>0){
+   if (data_counter1)
+    data_counter2 = true;
+    Serial.println("something happened");
+    dataString1 = Serial1.readString();
+    dataString2 = Serial1.readString();
+    dataString3 = Serial1.readString();
+  Serial.print(dataString1);
+  Serial.print(dataString2);
+  Serial.println(dataString3);
+  data_all = dataString1 + dataString2 + dataString3;
+  if (data_all.substring(0,6) == "append")
+  data_counter1 = true;
   }
-  if (data){
-  Serial.print("Data is: ");
-  Serial.println(dataString);
-  data = false;
-  }
-  delay(1000);
-  Serial.println("delay");
+  delay(10);
+
+if (data_counter1){
+ all_data = data_all;
+}
+
+if (data_counter2){
+all_data += data_all;
+Serial.print("all data is: "); 
+Serial.println(all_data);
+data_counter2= false;
+values = parseString(all_data);
+Serial.print("values are: "); 
+Serial.println(values);
+}
 }
 
 String msg[10];
@@ -86,11 +107,12 @@ String parseString(String s){
   int len= s.length();
   int i = 0;
   int prev_comma = 0;
-  int msg_num = 0;
+  
   bool first = true;
+  s = s.substring(118);
   for (i = 0; i<len;i++){
     //find commas and export data values
-    if(s.charAt(i)== ',' and first){
+   /* if(s.charAt(i)== ',' and first){
       msg[msg_num] = s.substring(0,i);
       prev_comma = i;
       first = false;
@@ -99,7 +121,11 @@ String parseString(String s){
       msg[msg_num] = s.substring(prev_comma+1,i);
       prev_comma = i;
     }
-    msg_num++;
+    */
   }
-  
+  return s;
+}
+double* parseValues(String s){
+
+
 }
